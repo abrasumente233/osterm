@@ -4,7 +4,7 @@
 
 Who doesn't like staring at `top(1)` all day, pretending you're a cool hacker? If you don't know `top`, it provides an ongoing look at processor activity in real time, and can provide an interactive interface for manipulating processes. There are many top variants out there, and I think [htop](https://github.com/htop-dev/htop) and [btop](https://github.com/aristocratos/btop) are cool! Definitely try them at home.
 
-![image-20220621002922247](/Users/a44/Desktop/image-20220621002922247.png)
+![btop running](images/btop.png)
 
 To make things cooler, we'll write our own `top`, from scratch, on our own operating system. A cool difference between implementing a `top` in Linux and our own OS, is that we don't get [nice processes information APIs](https://man7.org/linux/man-pages/man5/proc.5.html) for free, we need to get our hands dirty to implement them.
 
@@ -110,7 +110,7 @@ Emm, okay, then we'll start with syscall interface first, and work our way to im
 8. Run `git clone https://github.com/[your_github_username]/xv6-k210.git`, replace `[..]` with your GitHub username
 9. `cd xv6-k210`
 10. `make run platform=qemu` 
-11. After roughly minutes of compilation, xv6's shell will come to your eye, and you can play around as you like!![image-20220621110701968](/Users/a44/Library/Application Support/typora-user-images/image-20220621110701968.png)
+11. After roughly minutes of compilation, xv6's shell will come to your eye, and you can play around as you like!![xv6 running](images/xv6-running.png)
 12. Press `Ctrl+A and X` to terminate QEMU.
 
 For running on K210, see xv6-k210's [fantastic documentation](https://github.com/HUST-OS/xv6-k210#run-on-k210-board).
