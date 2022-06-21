@@ -109,7 +109,8 @@ Emm, okay, then we'll start with syscall interface first, and work our way to im
 7. `sudo apt install make git`, to install misc things
 8. Run `git clone https://github.com/[your_github_username]/xv6-k210.git`, replace `[..]` with your GitHub username
 9. `cd xv6-k210`
-10. `make run platform=qemu` 
+9. `make fs` makes a FAT32 filesystem image, save it to `fs.img`
+10. `make run platform=qemu` , runs xv6-k210 on QEMU.
 11. After roughly minutes of compilation, xv6's shell will come to your eye, and you can play around as you like!![xv6 running](images/xv6-running.png)
 12. Press `Ctrl+A and X` to terminate QEMU.
 
