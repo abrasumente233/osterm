@@ -103,10 +103,11 @@ Emm, okay, then we'll start with syscall interface first, and work our way to im
 1. Fork [xv6-k210](https://github.com/abrasumente233/xv6-k210) on GitHub
 2. Launch your favorite Linux environment: [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install), VirtualBox or a real Linux box
 3. Open a terminal
-4. If you're on Ubuntu, run `sudo apt install gcc-riscv64-unknown-elf` to install the RISC-V 64bit compiler. For other Linux distributions, you can search in corresponding package manager or [compile one by yourself](https://github.com/riscv-collab/riscv-gnu-toolchain)
+4. If you're on Ubuntu, run `sudo apt update && sudo apt install gcc-riscv64-unknown-elf` to install the RISC-V 64bit compiler. For other Linux distributions, you can search in corresponding package manager or [compile one by yourself](https://github.com/riscv-collab/riscv-gnu-toolchain)
 5. `sudo apt install qemu-system-misc` to install QEMU emulator for RISC-V
 6. `sudo apt install python3`, because our test script is written in Python
 7. `sudo apt install make git`, to install misc things
+7. `sudo apt install dosfstools`, to install mkfs.vfat tool
 8. Run `git clone https://github.com/[your_github_username]/xv6-k210.git`, replace `[..]` with your GitHub username
 9. `cd xv6-k210`
 9. `make fs` makes a FAT32 filesystem image, save it to `fs.img`
