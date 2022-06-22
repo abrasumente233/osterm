@@ -60,7 +60,31 @@ $
 $
 ```
 
-Assume in an alternative universe, we have added this feature to xv6. The next step would be retrieving processes' information from the kernel. We could use the syscall interface, but instead we will closely follow actual Linux implementation, and use filesystem to communicate between the kernel and our `ps`.
+Assume in an alternative universe, we have added this feature to xv6.
+
+> Narrator: Hello from another universe! I'm happy to tell you that xv6 already has [background execution](https://github.com/HUST-OS/xv6-k210/blob/main/xv6-user/sh.c#L392-L402).
+
+Hello! Hello? Wait, what? I don't believe you, and wait for me to try out myself.
+
+```
+# in the xv6-k210 directory
+$ make run platform=qemu
+...
+-> / $ sleep 100 &       # finishes immediately
+-> / $ echo do something else while sleeping
+do something else while sleeping
+-> / $ 
+```
+
+Oh... I see that xv6 is really a surprising piece of treasure.
+
+Anyways, so we don't get to implement background execution itself, but we can *imporve* it. As you can see, we can't interrupt a running `sleep` process by pressing `Ctrl+C`. 
+
+> Narrator: Let's make `Ctrl+C` terminate the foreground process!
+
+Let's not limit ourselves to just termination, but to give the user program freedom to do anything when it receives a signal, by executing its *signal handler*.
+
+The next step would be retrieving processes' information from the kernel. We could use the syscall interface, but instead we will closely follow actual Linux implementation, and use filesystem to communicate between the kernel and our `ps`.
 
 The filesystem in question is called the [proc filesystem](https://man7.org/linux/man-pages/man5/proc.5.html), which "is a pseudo-filesystem which provides an interface to kernel data structures. It's commonly mounted at `/proc`", that provides process information. Example:
 
@@ -169,6 +193,10 @@ All times reported are in clock ticks.
 
 `getmem()` returns virtual memory size of the process in KiB (1024-bytes units)
 
+#### Hints
+
+1. See the `sz` field in `struct proc`.
+
 ### [Bonus] syscall #4: clone[^1]
 
 This system call involves adding extra multi-tasking power to xv6, by introducing what's called "lightweight processes", aka threads. The concept of threads being lightweight process arises by the fact of **shared virtual address space**. The threads execute concurrently and **share text/code, globals and heap region** of virtual address space. Note each thread has **seperate stack and registers context** for execution.
@@ -180,28 +208,168 @@ This system call involves adding extra multi-tasking power to xv6, by introducin
 
 [^1]: https://github.com/kishanpatel22/xv6-kernel-threads/blob/master/doc/xv6_kernel_thread_project.md
 
-## Task 2: Add background execution to xv6[^2]
+## Task 2: Add signals to xv6[^2][^3]
 
-Sometimes, when using a shell, you want to be able to run multiple jobs concurrently. In most shells, this is implemented by letting you put a job in the "background". This is done as follows:
+A signal, aka software interrupt, is a notification to a process that an event has occurred. A signal might come from different sources:
 
+1. The kernel: alarm
+2. The process itself
+3. Other processes
+
+There are different options when handling a signal:
+
+1. we take the *default action*, terminating the process upon receiving SIGINT
+2. we ignore the signal
+3. we execute a user-defined signal handler function
+
+Also there are many ways to send a signal
+
+1. A process can send a signal to itself by calling [`int raise(int sig)`](https://man7.org/linux/man-pages/man3/raise.3.html)
+2. It can also send a signal to another process (including itself) by calling [`int kill(pid_t pid, int sig)`](https://man7.org/linux/man-pages/man2/kill.2.html)
+3. Another useful singal function is [`unsigned int alarm(unsigned int seconds)`](https://man7.org/linux/man-pages/man2/alarm.2.html), which can be used to schedule a SIGALARM signal some time in the future
+
+#### syscall: `alarm`
+
+In this part, we implement a new syscall `unsigned int alarm(unsigned int seconds)`, which sends `SIGALARM` to the calling process after the specified time interval. You don't need to implement the signal receiving part yet, which means sending `SIGALARM` is just `kill()` the process.
+
+The program `alarmtest.c` calls alarm(), then enters an infinite loop. A correct implementation of `alarm()` kills the process after the specified number of seconds.
+
+```c
+// alarmtest.c
+#include "xv6-user/user.h"
+
+int main() {
+  int pid;
+  printf("Alarm testing!\n");
+    
+  alarm(5);         // send SIGALARM to calling process after 5 seconds, which means terminating it
+  while(1);			// process suspended, waiting for signals to wake up
+  printf("unreachable!");
+
+  exit(0);
+}
 ```
-$ sleep 3 &
+
+#### syscall: `signal` step 1
+
+In the `alarm` above, there's not much we can do when we receive SIGALARM, other than being terminated. 
+
+`signal()` comes to the rescue. The `signal()` system call can be used to change the “disposition” of a signal, i.e. how the signal is handled when received
+
+```c
+void (*signal(int sig, void (*func)(int)))(int);
 ```
 
-The & operator will always be the last word of an input. You should not wait for the child process to exit before moving on and printing the next command prompt. Thus, you can start more than one job by repeatedly using the trailing ampersand.
+This rather complex prototype means that `signal()` is a function that takes two parameters: *sig* and *func*. The function to be caught or ignored is specified by argument *sig* and *func* specifies the function that will receive the signal; this function must be one that takes a single **int** argument and is of type **void**. The `signal()` function itself returns a function of the same type, which is the previous value of the function set up to handle this signal, or one of the two special values
 
-You may take the following assumptions (simplifications):
+1. `SIG_IGN` for ignoring the signal
+2. `SIG_DFL` for restoring default behavior (i.e. kill the process)
 
-1. No background execution will be used with built-in commands
-2. Pipeline will **not** be combined with redirections or background execution, meaning we won't support `echo a | cat &` (Redirections will be combined with background execution, however. This means `do_hard_work > output.txt &` is possible)
+In this step, you need to support only `SIG_DFL` (=0, default), and `SIG_IGN` (=1, ignore).
 
-### Hint
+Test your implementation using `alarmtest2.c`.
 
-If `&` is given, you should **not** call `wait()` (or anything similar) to wait for the child process to exit. You need to maintain a list of currently-running background processes in your shell. When the built-in `exit` command is called, use `kill()` to terminate the still-running processes.
+```c
+// alarmtest2.c
+#include "xv6-user/user.h"
 
-[^2]: https://pages.cs.wisc.edu/~gerald/cs537/Fall17/projects/p2a.html
+//tell child process to wait for 5 seconds before sending
+//a SIGALRM signal to its parent.
 
-## Task 3: Implement the `/proc` pesudo-filesystem[^3]
+int main()
+{
+  int pid;
+
+  printf("Alarm testing!\n");
+
+  if ( ( pid = fork() ) == 0 ) {	//child
+    sleep ( 5 );
+    /*
+	Get parent process id, send SIGALARM signal to it. 
+     */
+    kill ( getppid(), SIGALARM );	
+    return 1; 
+  }
+
+  //parent process arranges to catch SIGALRM with a call
+  //to signal and then waits for the inevitable.
+  
+  printf("Waiting for alarm to go off\n");
+  (void) signal ( SIGALARM, SIG_IGN );
+ 
+  while(1);			//process suspended, waiting for signals to wake up
+  printf("now reachable!\n");
+
+  return 1;
+}
+```
+
+#### syscall: `singal` step 2
+
+If the second argument is a function (i.e. a value that is not `SIG_DFL` or `SIG_IGN`), then the function passed in should be called when the signal is received. We will follow the Linux design for implementing this, which is described in the [linuxjournal article](https://www.linuxjournal.com/article/3985).
+
+**VERY IMPORTANT: the signal handler must run in user mode only**
+
+Test your implementation using `alarmtest3.c`.
+
+```c
+// alarmtest3.c
+#include "xv6-user/user.h"
+
+//simulates an alarm clock
+void ding ( int sig )
+{
+  printf("Alarm has gone off\n");
+}
+
+//tell child process to wait for 5 seconds before sending
+//a SIGALRM signal to its parent.
+
+int main()
+{
+  int pid;
+
+  printf("Alarm testing!\n");
+
+  if ( ( pid = fork() ) == 0 ) {	//child
+    sleep ( 5 );
+    /*
+	Get parent process id, send SIGALARM signal to it. 
+     */
+    kill ( getppid(), SIGALARM );	
+    return 1; 
+  }
+
+  //parent process arranges to catch SIGALRM with a call
+  //to signal and then waits for the inevitable.
+  
+  printf("Waiting for alarm to go off\n");
+  (void) signal ( SIGALARM, ding );
+ 
+  pause();			//process suspended, waiting for signals to wake up
+  printf("Done!\n");
+
+  return 1;
+}
+```
+
+##### Hints
+
+1. You need to arrange things so that, when the handler returns, the process resumes executing where it left off. How can you do that?
+
+#### Ctrl-C sends SIGINT to the foreground process 
+
+Modify `consoleintr()` in `console.c`, so that whenever `Ctrl+C` is pressed, the kernel sends a `SIGINT` to the current `sh`. Then `sh` will execute its signal handler, who checks whether a foreground process is running, if so, forward `SIGINT` to it, if not, reprint a shell prompt, just like what you expect if you `Ctrl+C` nothing in `bash`.
+
+##### Hints
+
+1. Use `sleep 100` to test `Ctrl+C`
+
+[^2]: http://cse.csusb.edu/tongyu/courses/cs460/labs/lab3.php
+
+[^3]: https://cs385.class.uic.edu/homeworks/7-implementing-signals/
+
+## Task 3: Implement the `/proc` pesudo-filesystem[^4]
 
 In Linux, the `/proc` directory holds a number of files that don't have a representation on disk. These "virtual" files describe the state and configuration of the system, its processes, and more. Indeed, even the /proc directory contents don't exist on disk. Instead, the contents of the directory is dynamically generated every time it is read.
 
@@ -262,7 +430,7 @@ When you’re testing, it’s fine to start by manually creating the proc folder
 
 So, have init.c create the `/proc` folder using `mkdir()`. But on the first run, you still don’t have a `/proc` when `main()` runs. So, for full points, create a `sys_mount()` system call, and call that from init.c.
 
-[^3]: https://cs385.class.uic.edu/homeworks/8-proc-file-system/
+[^4]: https://cs385.class.uic.edu/homeworks/8-proc-file-system/
 
 ## Task 4: Implement the `ps` command
 
