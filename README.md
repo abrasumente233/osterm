@@ -169,7 +169,7 @@ All times reported are in clock ticks.
 
 `getmem()` returns virtual memory size of the process in KiB (1024-bytes units)
 
-### [Bouns] syscall #4: clone[^1]
+### [Bonus] syscall #4: clone[^1]
 
 This system call involves adding extra multi-tasking power to xv6, by introducing what's called "lightweight processes", aka threads. The concept of threads being lightweight process arises by the fact of **shared virtual address space**. The threads execute concurrently and **share text/code, globals and heap region** of virtual address space. Note each thread has **seperate stack and registers context** for execution.
 
