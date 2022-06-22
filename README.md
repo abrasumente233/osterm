@@ -210,17 +210,17 @@ This system call involves adding extra multi-tasking power to xv6, by introducin
 
 ## Task 2: Add signals to xv6[^2][^3]
 
-A signal, aka software interrupt, is a notification to a process that an event has occurred. A signal might come from different sources:
+A signal, aka software interrupt, is a notification to a process that an event has occurred. A signal might come from different sources
 
-1. The kernel: alarm
+1. The kernel
 2. The process itself
 3. Other processes
 
-There are different options when handling a signal:
+There are different actions to take when receiving a signal
 
-1. we take the *default action*, terminating the process upon receiving SIGINT
-2. we ignore the signal
-3. we execute a user-defined signal handler function
+1. Take the *default action*, terminating the process upon receiving SIGINT
+2. Ignore the signal
+3. Execute a user-defined signal handler function
 
 Also there are many ways to send a signal
 
@@ -424,7 +424,7 @@ where
 5. utime, stime, cutime, cstime have the same meaning as they have in `tms` struct
 6. vsz: virtual memory size of the process in KiB (1024-byte units), as returned by syscall `getmem()`
 
-### Bonus: automatically create /proc folder and then mount proc 
+### [Bonus] Automatically create /proc folder and then mount proc 
 
 When you’re testing, it’s fine to start by manually creating the proc folder, rebooting and having `main()` do the mounting. You can have `/proc` created when making the filesystem image, but it's best that xv6 creates it automatically if it doesn't exist.
 
