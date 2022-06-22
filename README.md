@@ -104,7 +104,7 @@ Emm, okay, then we'll start with syscall interface first, and work our way to im
 2. Launch your favorite Linux environment: [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install), VirtualBox or a real Linux box (NOTE: WSL1 won't work because it doesn't support `mount` and usb devices)
 3. Open a terminal
 4. If you're on Ubuntu, run `sudo apt update && sudo apt install gcc-riscv64-unknown-elf` to install the RISC-V 64bit compiler. For other Linux distributions, you can search in corresponding package manager or [compile one by yourself](https://github.com/riscv-collab/riscv-gnu-toolchain)
-5. `sudo apt install qemu-system-misc` to install QEMU emulator for RISC-V. (NOTE: xv6-k210 won't run in newer versions of QEMU like 6.2.0, reporting "Some ROM regions are overlapping", try installing an older version like 4.2.1 or 5.2.0, or downgrading your Ubuntu. This is a ugly workaround, and we will update the documentation as soon as there's a fix)
+5. `sudo apt install qemu-system-misc` to install QEMU emulator for RISC-V. (NOTE: xv6-k210 won't run in newer versions of QEMU like 6.2.0, reporting "Some ROM regions are overlapping", try installing an older version like 4.2.1, or downgrading your Ubuntu. This is a ugly workaround, and we will update the documentation as soon as there's a fix)
 6. `sudo apt install python3`, because our test script is written in Python
 7. `sudo apt install make git`, to install misc things
 7. `sudo apt install dosfstools`, to install mkfs.vfat tool
