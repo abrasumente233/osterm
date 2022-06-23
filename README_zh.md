@@ -20,7 +20,7 @@ API 即为 [Application Programming Interface](https://en.wikipedia.org/wiki/API
 
 > 但是我如果想从零实现一个操作系统，并想要从中获得最大的乐趣呢？
 
-当然了！如果你有足够的时间，你完全可以[实现一个](https://rcore-os.github.io/rCore-Tutorial-Book-v3/index.html)[自己的](https://nankai.gitbook.io/ucore-os-on-risc-v64/)[操作系统]((https://xiayingp.gitbook.io/build_a_os/)（这里提供一些教学文档）。但为了节省时间，我们还是将基于 xv6 实现，但仍然有许多 API 需要添加。
+当然了！如果你有足够的时间，你完全可以[实现一个](https://rcore-os.github.io/rCore-Tutorial-Book-v3/index.html)[自己的](https://nankai.gitbook.io/ucore-os-on-risc-v64/)[操作系统](https://xiayingp.gitbook.io/build_a_os/)（这里提供一些教学文档）。但为了节省时间，我们还是将基于 xv6 实现，但仍然有许多 API 需要添加。
 
 更好玩的是，我们将不仅仅在虚拟器上运行我们的 `top` 程序，而且会在真正的硬件 — [K210开发板](https://canaan.io/product/kendryteai)（基于 [RISC-V架构](https://en.wikipedia.org/wiki/RISC-V)）上运行。
 
