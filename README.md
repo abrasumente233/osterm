@@ -273,9 +273,6 @@ Test your implementation using `alarmtest2.c`.
 // alarmtest2.c
 #include "xv6-user/user.h"
 
-//tell child process to wait for 5 seconds before sending
-//a SIGALRM signal to its parent.
-
 int main()
 {
   int pid;
@@ -290,7 +287,7 @@ int main()
   while(1);			//process suspended, waiting for signals to wake up
   printf("now reachable!\n");
 
-  return 1;
+  exit(0);
 }
 ```
 
@@ -312,9 +309,6 @@ void ding ( int sig )
   printf("Alarm has gone off\n");
 }
 
-//tell child process to wait for 5 seconds before sending
-//a SIGALRM signal to its parent.
-
 int main()
 {
   int pid;
@@ -326,10 +320,10 @@ int main()
   printf("Waiting for alarm to go off\n");
   (void) signal ( SIGALARM, ding );
  
-  pause();			//process suspended, waiting for signals to wake up
+  while(1);			//process suspended, waiting for signals to wake up
   printf("Done!\n");
 
-  return 1;
+  exit(0);
 }
 ```
 
