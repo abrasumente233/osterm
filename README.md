@@ -1,5 +1,7 @@
 # A process viewer for xv6
 
+[中文版](README_zh.md)
+
 ## Introduction
 
 Who doesn't like staring at `top(1)` all day, pretending you're a cool hacker? If you don't know `top`, it provides an ongoing look at processor activity in real time, and can provide an interactive interface for manipulating processes. There are many top variants out there, and I think [htop](https://github.com/htop-dev/htop) and [btop](https://github.com/aristocratos/btop) are cool! Definitely try them at home.
