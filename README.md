@@ -357,6 +357,21 @@ int main()
 
 1. You need to arrange things so that, when the handler returns, the process resumes executing where it left off. How can you do that?
 
+#### syscall: kill
+
+So far, the only way to send a signal is through `alarm`, which can only send and receive signals by the same process.
+
+As we know from above, `kill` is a way to send signals between different processes, but the existing `kill` in xv6 can *only kill* other processes, rather than politely sending them a signal.
+
+In this part, we will extend `kill(int pid)` to `kill(int pid, int sig)` so that
+
+1. it can send signal to the process specified by pid
+2. it can send arbitrary sisgnals, like `SIGINT` and `SIGALARM`
+
+##### Hints
+
+`kill(int pid)` is an existing syscall in xv6, to modify it, you also want to modify every existing invocation to it, and try not to break them.
+
 #### Ctrl-C sends SIGINT to the foreground process 
 
 Modify `consoleintr()` in `console.c`, so that whenever `Ctrl+C` is pressed, the kernel sends a `SIGINT` to the current `sh`. Then `sh` will execute its signal handler, who checks whether a foreground process is running, if so, forward `SIGINT` to it, if not, reprint a shell prompt, just like what you expect if you `Ctrl+C` nothing in `bash`.
