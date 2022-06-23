@@ -4,7 +4,7 @@
 
 ## 简介
 
-谁不想整天盯着 `top(1)` ，假装自己是很酷的黑客（程序员）呢？`top` 提供了实时的进程活动，并提供了一个可以操作进程的交互式接口。如今有许多top的变体，强烈推荐大家试试  [htop](https://github.com/htop-dev/htop) 和 [btop](https://github.com/aristocratos/btop)。
+谁不想整天盯着 `top(1)` ，假装自己是个很酷的黑客呢？`top` 提供了实时的进程活动，并提供了一个可以操作进程的交互式接口。如今有许多top的变体，强烈推荐大家试试  [htop](https://github.com/htop-dev/htop) 和 [btop](https://github.com/aristocratos/btop)。
 
 ![btop running](images/btop.png)
 
@@ -12,7 +12,7 @@
 
 > 那么什么是 API 呢？🤔
 
-API 即为 [Application Programming Interface](https://en.wikipedia.org/wiki/API)，通过 API 可以使不同的软件互相通信（通信？合作！）。在操作系统中，API 使你能够利用内核提供的功能（🤔）。拿 `top` 来说，我们需要通过调用系统调用 [`getpid()`](https://man7.org/linux/man-pages/man2/getpid.2.html)来向内核请求当前正在运行的进程 pid。
+API 即为 [Application Programming Interface](https://en.wikipedia.org/wiki/API)，通过 API，不同模块可以互相通信。在操作系统中，API 使我们能够与内核通信。拿 `top` 来说，我们需要通过系统调用 [`getpid()`](https://man7.org/linux/man-pages/man2/getpid.2.html)来向内核请求当前正在运行的进程 pid。
 
 幸运的是，我么将在  [xv6](https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf)（一个基于教学的操作系统）上来完成我们的工作，在这个操作系统中已经实现了 `getpid()` ，以及一些其他的系统调用。
 
