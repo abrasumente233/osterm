@@ -282,17 +282,7 @@ int main()
 
   printf("Alarm testing!\n");
 
-  if ( ( pid = fork() ) == 0 ) {	//child
-    sleep ( 5 );
-    /*
-	Get parent process id, send SIGALARM signal to it. 
-     */
-    kill ( getppid(), SIGALARM );	
-    return 1; 
-  }
-
-  //parent process arranges to catch SIGALRM with a call
-  //to signal and then waits for the inevitable.
+  alarm (5);
   
   printf("Waiting for alarm to go off\n");
   (void) signal ( SIGALARM, SIG_IGN );
@@ -331,17 +321,7 @@ int main()
 
   printf("Alarm testing!\n");
 
-  if ( ( pid = fork() ) == 0 ) {	//child
-    sleep ( 5 );
-    /*
-	Get parent process id, send SIGALARM signal to it. 
-     */
-    kill ( getppid(), SIGALARM );	
-    return 1; 
-  }
-
-  //parent process arranges to catch SIGALRM with a call
-  //to signal and then waits for the inevitable.
+  alarm (5);
   
   printf("Waiting for alarm to go off\n");
   (void) signal ( SIGALARM, ding );
