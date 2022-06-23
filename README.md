@@ -30,7 +30,7 @@ Oh, just like [ARM](https://en.wikipedia.org/wiki/ARM_architecture_family) is a 
 
 Without further ado, let's have some fun.
 
-Remember we said we want to implemenet `top`? Well, it's interactive, and to make you focused on the OS part, instead of the cool UI, we'll first implement a less cool version of `top` - `ps`, that just prints all processes' state as table and exits. Let's try that in real Linux!
+Remember we said we want to implement `top`? Well, it's interactive, and to make you focused on the OS part, instead of the cool UI, we'll first implement a less cool version of `top` - `ps`, that just prints all processes' state as table and exits. Let's try that in real Linux!
 
 ```
 $ ps
@@ -78,7 +78,7 @@ do something else while sleeping
 
 Oh... I see that xv6 is really a surprising piece of treasure.
 
-Anyways, so we don't get to implement background execution itself, but we can *imporve* it. As you can see, we can't interrupt a running `sleep` process by pressing `Ctrl+C`. 
+Anyways, so we don't get to implement background execution itself, but we can *improve* it. As you can see, we can't interrupt a running `sleep` process by pressing `Ctrl+C`. 
 
 > Narrator: Let's make `Ctrl+C` terminate the foreground process!
 
@@ -134,7 +134,7 @@ Emm, okay, then we'll start with syscall interface first, and work our way to im
 7. `sudo apt install dosfstools`, to install mkfs.vfat tool
 8. Run `git clone https://github.com/[your_github_username]/xv6-k210.git`, replace `[..]` with your GitHub username
 9. `cd xv6-k210`
-9. `make fs` makes a FAT32 filesystem image, save it to `fs.img`
+9. `make fs` makes a FAT32 filesystem image, and saves it to `fs.img`
 10. `make run platform=qemu` , runs xv6-k210 on QEMU.
 11. After roughly minutes of compilation, xv6's shell will come to your eye, and you can play around as you like!![xv6 running](images/xv6-running.png)
 12. Press `Ctrl+A`, release, and then `X`, to terminate QEMU.
@@ -187,7 +187,7 @@ All times reported are in clock ticks.
 #### Hints
 
 1. RISC-V has a time counter, which you can read by using `r_time()` in `riscv.h`.
-2. In this syscall, there's no need to convert clock ticks to seconds. But later when you display elapsed time of a program, you don't want to see meaningless ticks. For QEMU, the block freqenucy is 12500000 Hz, and for K210, the freqenucy is 6500000 Hz.
+2. In this syscall, there's no need to convert clock ticks to seconds. But later when you display elapsed time of a program, you don't want to see meaningless ticks. For QEMU, the block frequency is 12500000 Hz, and for K210, the frequency is 6500000 Hz.
 
 ### syscall #3: getmem
 
@@ -199,7 +199,7 @@ All times reported are in clock ticks.
 
 ### [Bonus] syscall #4: clone[^1]
 
-This system call involves adding extra multi-tasking power to xv6, by introducing what's called "lightweight processes", aka threads. The concept of threads being lightweight process arises by the fact of **shared virtual address space**. The threads execute concurrently and **share text/code, globals and heap region** of virtual address space. Note each thread has **seperate stack and registers context** for execution.
+This system call involves adding extra multi-tasking power to xv6, by introducing what's called "lightweight processes", aka threads. The concept of threads being lightweight process arises by the fact of **shared virtual address space**. The threads execute concurrently and **share text/code, globals and heap region** of virtual address space. Note each thread has **separate stack and registers context** for execution.
 
 #### Hints
 
@@ -226,7 +226,7 @@ Also there are many ways to send a signal
 
 1. A process can send a signal to itself by calling [`int raise(int sig)`](https://man7.org/linux/man-pages/man3/raise.3.html)
 2. It can also send a signal to another process (including itself) by calling [`int kill(pid_t pid, int sig)`](https://man7.org/linux/man-pages/man2/kill.2.html)
-3. Another useful singal function is [`unsigned int alarm(unsigned int seconds)`](https://man7.org/linux/man-pages/man2/alarm.2.html), which can be used to schedule a SIGALARM signal some time in the future
+3. Another useful signal function is [`unsigned int alarm(unsigned int seconds)`](https://man7.org/linux/man-pages/man2/alarm.2.html), which can be used to schedule a `SIGALARM` signal some time in the future
 
 #### syscall: `alarm`
 
@@ -304,7 +304,7 @@ int main()
 }
 ```
 
-#### syscall: `singal` step 2
+#### syscall: `signal` step 2
 
 If the second argument is a function (i.e. a value that is not `SIG_DFL` or `SIG_IGN`), then the function passed in should be called when the signal is received. We will follow the Linux design for implementing this, which is described in the [linuxjournal article](https://www.linuxjournal.com/article/3985).
 
@@ -366,7 +366,7 @@ As we know from above, `kill` is a way to send signals between different process
 In this part, we will extend `kill(int pid)` to `kill(int pid, int sig)` so that
 
 1. it can send signal to the process specified by pid
-2. it can send arbitrary sisgnals, like `SIGINT` and `SIGALARM`
+2. it can send arbitrary signals, like `SIGINT` and `SIGALARM`
 
 ##### Hints
 
@@ -384,7 +384,7 @@ Modify `consoleintr()` in `console.c`, so that whenever `Ctrl+C` is pressed, the
 
 [^3]: https://cs385.class.uic.edu/homeworks/7-implementing-signals/
 
-## Task 3: Implement the `/proc` pesudo-filesystem[^4]
+## Task 3: Implement the `/proc` pseudo-filesystem[^4]
 
 In Linux, the `/proc` directory holds a number of files that don't have a representation on disk. These "virtual" files describe the state and configuration of the system, its processes, and more. Indeed, even the /proc directory contents don't exist on disk. Instead, the contents of the directory is dynamically generated every time it is read.
 
@@ -424,7 +424,7 @@ Make sure `ls /proc` displays the appropriate names listed above, and sensible t
 
 For each running process, the corresponding directory (`/proc/[pid]`) should contain one file `stat`.
 
-When `/proc/[pid]/stat` is `cat`ted, it should output fields seperated by spaces.
+When `/proc/[pid]/stat` is `cat`ted, it should output fields separated by spaces.
 
 ```
 pid (command) state ppid utime stime cutime cstime vsz
@@ -474,7 +474,7 @@ where:
 
 1. `ps` works by opening `/proc` directory, iterating through every directory entries, parse the pid from the sub-directory name, and read `/proc/[pid]/stat` to read process information, as is provided in Task 3.
 
-2. You can refer to this [StackOverflow anwer](https://stackoverflow.com/questions/23607980/implementing-my-own-ps-command) or [busybox's implementation of `ps`](https://github.com/mirror/busybox/blob/master/procps/ps.c).
+2. You can refer to this [StackOverflow answer](https://stackoverflow.com/questions/23607980/implementing-my-own-ps-command) or [busybox's implementation of `ps`](https://github.com/mirror/busybox/blob/master/procps/ps.c).
 
 ## Resources
 
