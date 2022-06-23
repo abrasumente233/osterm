@@ -4,7 +4,9 @@
 
 ## 简介
 
-谁不想整天盯着 `top(1)` ，假装自己是个很酷的黑客呢？`top` 提供了实时的进程活动，并提供了一个可以操作进程的交互式接口。如今有许多top的变体，强烈推荐大家试试  [htop](https://github.com/htop-dev/htop) 和 [btop](https://github.com/aristocratos/btop)。
+哪个程序员不想挂着一个很酷的 `top(1)` ，假装自己是个厉害的黑客呢（😎）？
+
+`top` 提供了实时的进程活动，并提供了一个可以操作进程的交互式接口。如今有许多top的变体，强烈推荐大家试试  [htop](https://github.com/htop-dev/htop) 和 [btop](https://github.com/aristocratos/btop)。
 
 ![btop running](images/btop.png)
 
