@@ -49,7 +49,7 @@ $ ps
 
 > 但现在只能同时运行两个进程，那太简单啦！
 
-没错！但事情当然没有那么简单，在实现 `ps` 之前，让 xv6 shell 支持多进程是必要的，需要利用 `&` 使得能够进程在后台运行。
+没错！但事情当然没有那么简单，在实现 `ps` 之前，让 xv6 shell 支持多进程是必要的，需要利用 `&` 使得进程能够在后台运行。
 
 > 好消息是 xv6 已经可以支持进程在[后台运行](https://github.com/HUST-OS/xv6-k210/blob/main/xv6-user/sh.c#L392-L402)。
 
@@ -137,7 +137,7 @@ pid_t ret = getppid();
 
 #### 提示：
 
-1. xv6-k210 中对[如何添加系统调用](https://github.com/HUST-OS/xv6-k210/blob/main/doc/%E7%94%A8%E6%88%B7%E4%BD%BF%E7%94%A8-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8.md))有详细说明；
+1. xv6-k210 中对[如何添加系统调用](https://github.com/HUST-OS/xv6-k210/blob/main/doc/%E7%94%A8%E6%88%B7%E4%BD%BF%E7%94%A8-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8.md)有详细说明；
 2. 注意 `struct proc` 中有一个 `parent` 成员；
 3. 可参考已有的 `getpid()` 实现。
 
@@ -159,7 +159,7 @@ clock_t ticks = times(&t);
 
 `utime` 为调用进程执行指令的 CPU 时间，`stime` 为内核为发起调用的进程执行任务所用的 CPU 时间。
 
-`cutime` 为 `utime` 和所有等待被终止的子进程的 `cutime` 之和。`cstime` 为 `stime` 和 所有等待被终止的子进程的 `cstime` 之和。
+`cutime` 为 `utime` 和所有等待被终止的子进程的 `cutime` 之和。`cstime` 为 `stime` 和所有等待被终止的子进程的 `cstime` 之和。
 
 *终止子进程（和其子进程，即子孙进程）的时间在* *`wait(2)` 返回进程 ID 时添加。特别要注意的是，子进程不会等待的子孙进程的时间将不会计算。*
 
@@ -270,11 +270,11 @@ int main()
 
 #### 系统调用：`signal` 第二步
 
-如果第二个参数为一函数（非 `SIG_DFL` 或 `SIG_ING` ），那么收到信号时就需要利用这个函数来处理，请参考 [Linux 对此的实现](https://www.linuxjournal.com/article/3985)。
+如果第二个参数为一函数（非 `SIG_DFL` 或 `SIG_ING` ），那么收到信号时就需要利用此函数来处理，请参考 [Linux 对此的实现](https://www.linuxjournal.com/article/3985)。
 
 **重要**：信号处理函数只能运行在用户态！
 
-`alarmtest3.c` 程序对其进行测试：
+`alarmtest3.c` 程序可对其进行测试：
 
 ```c
 // alarmtest3.c
@@ -304,7 +304,7 @@ int main()
 }
 ```
 
-#### 提示：
+##### 提示：
 
 当信号处理函数返回时，进程需要能够从它被中断的地方重新开始。
 
@@ -422,5 +422,5 @@ $ ps -o pid,ppid,comm,state,time,etime,vsz
 
 ## 参考资源
 
-1. xv6 手册: https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf，以及其中文译本： https://th0ar.gitbooks.io/xv6-chinese/content/
+1. xv6 手册: https://pdos.csail.mit.edu/6.828/2018/xv6/book-rev11.pdf ，以及其中文译本： https://th0ar.gitbooks.io/xv6-chinese/content/
 2. build a OS（关于 xv6 的笔记）：https://xiayingp.gitbook.io/build_a_os/
