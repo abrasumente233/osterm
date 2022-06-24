@@ -76,7 +76,7 @@ $ ps
    5303 pts/0    00:00:01 zsh
    5690 pts/0    00:00:00 sleep
    5832 pts/0    00:00:00 ps
-$ echo The pid is 5569, Let\\\\'s check it out in /proc
+$ echo The pid is 5569, Let\'s check it out in /proc
 The pid is 5569, Let's check it out in /proc
 $ ls -l /proc | grep 5690
 dr-xr-xr-x  9 ubuntu           ubuntu                         0 Jun 21 10:13 5690
@@ -157,7 +157,7 @@ struct tms t;
 clock_t ticks = times(&t);
 ```
 
-`utime` 为调用进程执行指令的 CPU 时间，`stime` 为内核为发起调用的进程执行任务所用的 CPU 时间。
+`utime` 为当前进程的 CPU 时间，`stime` 为内核为当前进程执行任务所用的 CPU 时间。
 
 `cutime` 为 `utime` 和所有等待被终止的子进程的 `cutime` 之和。`cstime` 为 `stime` 和所有等待被终止的子进程的 `cstime` 之和。
 
@@ -207,7 +207,7 @@ clock_t ticks = times(&t);
 
 #### 系统调用：`alarm`
 
-在这部分我们将实现一个新的系统调用 `unsigned int alarm(unsigned int seconds)` ，它将在指定的时间之后向调用进程发送 `SIGALARM` 信号，这里无需实现信号接收部分，也就是说发出  `SIGALARM` 信号仅仅 `kill()` 掉进程。
+在这部分我们将实现一个新的系统调用 `unsigned int alarm(unsigned int seconds)` ，它将在指定的时间之后向当前进程发送 `SIGALARM` 信号，这里无需实现信号接收部分，也就是说发出  `SIGALARM` 信号仅仅 `kill()` 掉进程。
 
 程序`alarmtest.c` 调用 `alarm()` ，然后进入死循环。对于 `alarm`，正确的实现是在指定的秒数之后进程被终止。
 
@@ -217,7 +217,7 @@ clock_t ticks = times(&t);
 
 int main() {
   int pid;
-  printf("Alarm testing!\\\\n");
+  printf("Alarm testing\n");
 
   alarm(5);         // send SIGALARM to calling process after 5 seconds, which means terminating it
   while(1);			// process suspended, waiting for signals to wake up
@@ -226,6 +226,10 @@ int main() {
   exit(0);
 }
 ```
+
+#### 系统调用：`pause`
+
+在这部分，需要实现系统调用 [`void pause()`](https://man7.org/linux/man-pages/man2/pause.2.html)。`pause` 暂停当前进程, 直到接收到一个信号。
 
 #### 系统调用：`signal` 第一步
 
@@ -254,15 +258,15 @@ int main()
 {
   int pid;
 
-  printf("Alarm testing!\\\\n");
+  printf("Alarm testing!\n");
 
   alarm (5);
-
-  printf("Waiting for alarm to go off\\\\n");
+  
+  printf("Waiting for alarm to go off\n");
   (void) signal ( SIGALARM, SIG_IGN );
-
-  while(1);			//process suspended, waiting for signals to wake up
-  printf("now reachable!\\\\n");
+ 
+  pause();			//process suspended, waiting for signals to wake up
+  printf("now reachable!\n");
 
   exit(0);
 }
@@ -283,22 +287,22 @@ int main()
 //simulates an alarm clock
 void ding ( int sig )
 {
-  printf("Alarm has gone off\\\\n");
+  printf("Alarm has gone off\n");
 }
 
 int main()
 {
   int pid;
 
-  printf("Alarm testing!\\\\n");
+  printf("Alarm testing!\n");
 
   alarm (5);
 
-  printf("Waiting for alarm to go off\\\\n");
+  printf("Waiting for alarm to go off\n");
   (void) signal ( SIGALARM, ding );
 
-  while(1);			//process suspended, waiting for signals to wake up
-  printf("Done!\\\\n");
+  pause();			//process suspended, waiting for signals to wake up
+  printf("Done!\n");
 
   exit(0);
 }

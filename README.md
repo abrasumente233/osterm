@@ -255,7 +255,7 @@ int main() {
 
 #### syscall: `pause`
 
-In this part, you're supposed to add a `void pause()` syscall to xv6, which suspends the calling process until it receives a signal.
+In this part, you're supposed to add a [`void pause()`](https://man7.org/linux/man-pages/man2/pause.2.html) syscall to xv6, which suspends the calling process until it receives a signal.
 
 
 #### syscall: `signal` step 1
