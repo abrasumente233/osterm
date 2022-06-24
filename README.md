@@ -230,6 +230,7 @@ Also there are many ways to send a signal
 2. It can also send a signal to another process (including itself) by calling [`int kill(pid_t pid, int sig)`](https://man7.org/linux/man-pages/man2/kill.2.html)
 3. Another useful signal function is [`unsigned int alarm(unsigned int seconds)`](https://man7.org/linux/man-pages/man2/alarm.2.html), which can be used to schedule a `SIGALARM` signal some time in the future
 
+
 #### syscall: `alarm`
 
 In this part, we implement a new syscall `unsigned int alarm(unsigned int seconds)`, which sends `SIGALARM` to the calling process after the specified time interval. You don't need to implement the signal receiving part yet, which means sending `SIGALARM` is just `kill()` the process.
@@ -251,6 +252,11 @@ int main() {
   exit(0);
 }
 ```
+
+#### syscall: `pause`
+
+In this part, you're supposed to add a `void pause()` syscall to xv6, which suspends the calling process until it receives a signal.
+
 
 #### syscall: `signal` step 1
 
@@ -286,7 +292,7 @@ int main()
   printf("Waiting for alarm to go off\n");
   (void) signal ( SIGALARM, SIG_IGN );
  
-  while(1);			//process suspended, waiting for signals to wake up
+  pause();			//process suspended, waiting for signals to wake up
   printf("now reachable!\n");
 
   exit(0);
@@ -322,7 +328,7 @@ int main()
   printf("Waiting for alarm to go off\n");
   (void) signal ( SIGALARM, ding );
  
-  while(1);			//process suspended, waiting for signals to wake up
+  pause();			//process suspended, waiting for signals to wake up
   printf("Done!\n");
 
   exit(0);
