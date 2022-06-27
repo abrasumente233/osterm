@@ -346,7 +346,7 @@ int main()
 
 1. You need to arrange things so that, when the handler returns, the process resumes executing where it left off. How can you do that?
 2. Since the signal handler must be run in user-mode, the kernel can't call the handler `ding` directly, instead the kernel must call it via context switching.
-3. On RISC-V, `ding` stores its `int sig` paramater in `a0` register.
+3. On RISC-V, `ding` stores its `int sig` parameter in `a0` register.
 
 #### syscall: kill
 
