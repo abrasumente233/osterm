@@ -257,6 +257,13 @@ int main() {
 
 In this part, you're supposed to add a [`void pause()`](https://man7.org/linux/man-pages/man2/pause.2.html) syscall to xv6, which suspends the calling process until it receives a signal.
 
+`pause` is very similar to `sleep(uint seconds)`, in that they both make a process go to sleep. The difference is just *what wakes up the process*. For `sleep(uint seconds)`, the timer wakes it up, and for `pause`, a signal wakes it up.
+
+So you know `pause` would look suspiciously like `sleep(uint seconds)`.
+
+##### Hints
+
+You can read about how `sleep` is implemented [here](https://th0ar.gitbooks.io/xv6-chinese/content/content/chapter5.html), which is a great opportunity to learn process scheduling, context switching and etc.
 
 #### syscall: `signal` step 1
 
